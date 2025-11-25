@@ -5,7 +5,7 @@ Handles vector database operations using ChromaDB.
 
 import yaml
 from typing import List, Optional
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
