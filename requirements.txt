@@ -29,3 +29,8 @@ pydantic==2.5.3
 
 # CLI and display
 colorama==0.4.6
+
+# Testing and Evaluation
+langchain-mistralai>=0.1.0
+ragas>=0.2.0
+datasets>=2.14.0
