@@ -2,7 +2,11 @@
 
 ## Overview
 
-This document describes the comprehensive testing and evaluation framework implemented for the Knowledge-Based Q&A System using RAG (Retrieval-Augmented Generation) architecture. The testing suite includes integration tests for multiple LLM providers and a robust RAGAS-based evaluation system for measuring RAG performance on academic papers.
+This document describes the comprehensive testing and evaluation framework implemented for the Knowledge-Based Q&A System using RAG (Retrieval-Augmented Generation) architecture. The testing suite includes:
+
+1. **Vector Database Testing**: Comprehensive tests for ChromaDB operations, data integrity, and retrieval quality
+2. **LLM Integration Testing**: Tests for multiple LLM providers (MistralAI, OpenAI, Gemini, Ollama)
+3. **RAGAS Evaluation**: Robust evaluation system for measuring RAG performance on academic papers
 
 ---
 
@@ -11,13 +15,14 @@ This document describes the comprehensive testing and evaluation framework imple
 1. [System Architecture](#system-architecture)
 2. [Dependencies and Setup](#dependencies-and-setup)
 3. [Testing Components](#testing-components)
-4. [RAGAS Evaluation Framework](#ragas-evaluation-framework)
-5. [Dataset Generation](#dataset-generation)
-6. [Evaluation Metrics](#evaluation-metrics)
-7. [Usage Guide](#usage-guide)
-8. [Results and Interpretation](#results-and-interpretation)
-9. [Best Practices](#best-practices)
-10. [Future Improvements](#future-improvements)
+4. [Vector Database Testing](#vector-database-testing)
+5. [RAGAS Evaluation Framework](#ragas-evaluation-framework)
+6. [Dataset Generation](#dataset-generation)
+7. [Evaluation Metrics](#evaluation-metrics)
+8. [Usage Guide](#usage-guide)
+9. [Results and Interpretation](#results-and-interpretation)
+10. [Best Practices](#best-practices)
+11. [Future Improvements](#future-improvements)
 
 ---
 
@@ -27,12 +32,14 @@ The testing framework consists of three main components:
 
 ```
 src/test/
+├── test_vector_store.py                       # Vector database tests
 ├── test_mistralai.py                          # MistralAI integration tests
 ├── generate_ragas_dataset.py                  # Basic dataset generator
 ├── generate_comprehensive_ragas_dataset.py     # Comprehensive multi-category dataset
 ├── generate_academic_ragas_dataset.py         # Academic paper-focused dataset
 ├── evaluate_academic_ragas.py                 # RAGAS evaluation runner
 └── test_data/                                 # Generated datasets and results
+    ├── vector_store_test_results.json
     ├── ragas_dataset.json
     ├── comprehensive_ragas_dataset.json
     ├── academic_ragas_dataset.json
@@ -183,6 +190,115 @@ python src/test/test_mistralai.py
 - "What is the main contribution of the GraphRAG-Causal framework?"
 - "How does graph-based retrieval enhance causal reasoning?"
 - "What are the advantages of GraphRAG-Causal over standard RAG?"
+
+---
+
+## Vector Database Testing
+
+### Overview
+
+The vector database is a critical component of the RAG system, responsible for storing document embeddings and performing semantic similarity searches. Comprehensive testing ensures data integrity, retrieval accuracy, and system reliability.
+
+### Test Coverage
+
+Our vector database test suite ([test_vector_store.py](src/test/test_vector_store.py:1-1)) includes 8 comprehensive tests:
+
+1. **Database Creation and Persistence**: Verifies database can be created and files are written to disk
+2. **Document Loading**: Tests database can be reloaded after application restart
+3. **Similarity Search Accuracy**: Validates retrieval returns semantically relevant documents
+4. **Search with Scores**: Ensures similarity scores are calculated and properly ordered
+5. **Metadata Filtering**: Tests filtering by document metadata (type, topic, source)
+6. **Incremental Addition**: Verifies new documents can be added without rebuilding
+7. **Retriever Interface**: Tests LangChain compatibility
+8. **Database Health Check**: Comprehensive health validation
+
+### Running Database Tests
+
+```bash
+# Run complete test suite
+python src/test/test_vector_store.py
+```
+
+**Expected Output**:
+```
+############################################################
+VECTOR STORE DATABASE TEST SUITE
+############################################################
+
+============================================================
+Test 1: Database Creation and Persistence
+============================================================
+✓ PASSED: Database created with 8 documents
+
+[... additional tests ...]
+
+############################################################
+TEST SUMMARY
+############################################################
+
+  Database Creation              : ✓ PASSED
+  Document Loading               : ✓ PASSED
+  Similarity Search              : ✓ PASSED
+  Search with Scores             : ✓ PASSED
+  Metadata Filtering             : ✓ PASSED
+  Incremental Addition           : ✓ PASSED
+  Retriever Interface            : ✓ PASSED
+  Database Health                : ✓ PASSED
+
+============================================================
+Total: 8/8 tests passed (100.0%)
+============================================================
+
+🎉 All tests passed! Vector database is working correctly.
+```
+
+### Key Test Details
+
+**Similarity Search Accuracy Test**:
+- Tests multiple query types with expected topics
+- Success threshold: 80% accuracy
+- Validates semantic understanding of embeddings
+
+**Metadata Filtering Test**:
+- Verifies filters by document type, topic, source
+- Ensures no false positives
+- Tests combined semantic + metadata search
+
+**Performance Considerations**:
+- Query time should be < 100ms for good performance
+- Database size should scale linearly with documents
+- All tests use isolated test database (no production impact)
+
+### Test Results Format
+
+Results are saved to `src/test/test_data/vector_store_test_results.json`:
+
+```json
+{
+  "test_results": {
+    "Database Creation": true,
+    "Document Loading": true,
+    "Similarity Search": true,
+    ...
+  },
+  "summary": {
+    "total_tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "success_rate": "100.0%"
+  }
+}
+```
+
+### For More Details
+
+See [DATABASE_TESTING.md](DATABASE_TESTING.md:1-1) for comprehensive documentation on:
+- Test methodology and philosophy
+- Detailed explanation of each test case
+- Performance benchmarking
+- Production database testing
+- Troubleshooting guide
+- CI/CD integration examples
 
 ---
 
